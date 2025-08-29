@@ -26,7 +26,7 @@
 # capitais = {"SP": "São Paulo", "RJ": "Rio de Janeiro", "MG": "Belo Horizonte"} 
 # for capital in capitais.items():
 #         print(f"A capital de {capital[0]} é {capital[1]}")
-produto = {"nome": "Teclado", "estoque": 15}
-produto["estoque"] += 10
-print(produto)
+# produto = {"nome": "Teclado", "estoque": 15}
+# produto["estoque"] += 10
+# print(produto)
  
