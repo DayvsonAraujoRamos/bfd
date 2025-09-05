@@ -28,9 +28,7 @@
 # finally:
 #     print("Encerrando Programa")
 # =================================
-def divide(a,b):
-    raise    
-try:
+
     
        
       
