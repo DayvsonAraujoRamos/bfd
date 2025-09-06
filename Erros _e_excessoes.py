@@ -61,9 +61,14 @@
 # finally:
 #     print("fim do programa")
 # ================================
-
-
-
-           
- 
-
+# class SaldoInsuficienteError(Exception):
+#     pass
+# def sacar(saldo,valor):
+#     if valor > saldo:
+#         raise SaldoInsuficienteError("seu saldo é insuficiente")
+#     return saldo - valor
+# try:
+#     novo_saldo = sacar(200,220)
+#     print(f"saque realizado,seu novo saldo é: {novo_saldo}")
+# except SaldoInsuficienteError as s:
+#     print(s)
