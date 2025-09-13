@@ -55,30 +55,44 @@
 # else:
 #     print("Não foi possível efetuar saque")
 # ===============================================
-class Aluno:
-    def __init__(self,nome,nota):
+# class Aluno:
+#     def __init__(self,nome,nota):
+#         self.nome = nome
+#         self.nota = nota
+
+#     def __str__(self):
+#        return f"Aluno: {self.nome}, Nota: {self.nota}"
+
+# aluno5 = Aluno("Maria",9.5)  
+# print(aluno5)
+# ------------------------------------------------------------------------------------------------
+# class Turma:
+#     def __init__(self):
+#         self.alunos = []
+#     def adicionar_aluno(self,aluno):
+#        self.alunos.append(aluno)
+
+# aluno1 = Aluno("Pedro",10)
+# aluno2 = Aluno("Ana",9)
+# aluno3 = Aluno("José",8.5)
+# aluno4 = Aluno("Maria",9)
+
+# turma = Turma()
+# turma.adicionar_aluno(aluno1)
+# turma.adicionar_aluno(aluno2)
+# turma.adicionar_aluno(aluno3)
+# turma.adicionar_aluno(aluno4)
+
+# for aluno in turma.alunos:
+#     print(aluno)
+# ============================
+class Cachorro:
+    especie = "Canis familiaris"
+    def __init__(self,nome,idade):
         self.nome = nome
-        self.nota = nota
+        self.idade = idade
 
-    def __str__(self):
-       return f"Aluno: {self.nome}, Nota: {self.nota}"
-class Turma:
-    def __init__(self):
-        self.alunos = []
-    def adicionar_aluno(self,aluno):
-       self.alunos.append(aluno)
-
-aluno1 = Aluno("Pedro",10)
-aluno2 = Aluno("Ana",9)
-aluno3 = Aluno("José",8.5)
-aluno4 = Aluno("Maria",9)
-
-turma = Turma()
-turma.adicionar_aluno(aluno1)
-turma.adicionar_aluno(aluno2)
-turma.adicionar_aluno(aluno3)
-turma.adicionar_aluno(aluno4)
-
-for aluno in turma.alunos:
-    print(aluno)
-
+cão = Cachorro("toto",4)      
+        
+print(f"{cão.especie}")
+print(f"{Cachorro.especie}")
