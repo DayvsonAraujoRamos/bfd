@@ -31,7 +31,7 @@ class Cachorro(Animal):
 dog = Cachorro("Rex", 3, "Labrador")
 dog.fazer_som()                         # Polimorfismo
 print(f"Idade: {dog.get_idade()}")      # Encapsulamento
-dog.set_idade(4)
+dog.set_idade(5)
 print(f"Nova idade: {dog.get_idade()}") # Encapsulamento
 
 
