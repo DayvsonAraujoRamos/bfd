@@ -43,7 +43,7 @@ class Permissao:
     def verificar_permissao(self):
         return "Permissao verificada com exito"
     def status(self):
-        return "Permissao Condedida"
+        return "Permissao Concedida"
 class Administrador(Autenticacao,Permissao):
     def __init__(self,nome,email):
         self.nome = nome
