@@ -60,13 +60,6 @@
 # print(calculadora(220, 22, "multiplicacao"))
 # print(calculadora(220, 22, "divisao"))
 # ==========================================
-def aplicar_operacao(a, b, funcao):
-    return funcao(a, b)
-def soma(a, b):
-    return a + b
-def multiplicar(a, b):
-    return a * b
-print(aplicar_operacao(6, 8, soma))        
-print(aplicar_operacao(6, 8, multiplicar))  
+ 
 
 
