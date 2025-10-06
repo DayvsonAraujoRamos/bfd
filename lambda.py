@@ -20,6 +20,6 @@
 # lista = [2,3,4,5]
 # print(reduce(lambda x,y:x*y,lista))
 # # ================================
-frutas = ["banana","uva","maça","laranja"] 
+frutas = ["banana","uva","maçã","laranja"] 
 ordenadas = sorted(frutas, key=lambda x: x[-1])
 print(ordenadas)
