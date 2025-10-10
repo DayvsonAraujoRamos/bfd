@@ -50,15 +50,15 @@ aprovados_formatados = list(map(
     lambda a: {"nome": a["nome"].upper(), "nota": a["nota"]}, aprovados
 ))
 
-# 3) Criar mensagens personalizadas
-mensagens = list(map(
-    lambda a: f"{a['nome']} FOI APROVADO COM NOTA {a['nota']}",
-    aprovados_formatados
-))
+# # 3) Criar mensagens personalizadas
+# mensagens = list(map(
+#     lambda a: f"{a['nome']} FOI APROVADO COM NOTA {a['nota']}",
+#     aprovados_formatados
+# ))
 
-print("Mensagens finais:")
-for msg in mensagens:
-    print(msg)
+# print("Mensagens finais:")
+# for msg in mensagens:
+#     print(msg)
 
 
 
