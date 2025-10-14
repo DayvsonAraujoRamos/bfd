@@ -1,16 +1,28 @@
 from abc import ABC, abstractmethod
 
-class Transporte(ABC):
+# Interface
+class Repositorio(ABC):
     @abstractmethod
-    def mover(self):
+    def salvar(self, objeto):
         pass
 
     @abstractmethod
-    def parar(self):
+    def buscar(self, id):
         pass
 
-class Carro(Transporte):
-    
-    def mover(self):
-        return "O carro está em movimento!"
-c = Carro()
+
+# Classe que implementa todos os métodos
+class RepositorioMemoria(Repositorio):
+    def salvar(self, objeto):
+        print(f"Objeto {objeto} salvo na memória.")
+
+    def buscar(self, id):
+        print(f"Buscando objeto com ID {id}.")
+        return {"id": id, "objeto": "Exemplo"}
+
+
+# Agora funciona normalmente
+repo = RepositorioMemoria()
+repo.salvar("Livro A")
+print(repo.buscar(1))
+

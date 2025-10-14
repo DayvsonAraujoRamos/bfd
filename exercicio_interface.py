@@ -58,8 +58,36 @@ class Relatorio(Imprimivel,Exportavel):
     def imprimir(self):
         print("O relatorio foi impresso")
     def exportar(self):
-        print("O relatorio foi expotado com sucesso")
+        print("O relatorio foi exportado com sucesso")
 
 Rel = Relatorio()
 Rel.imprimir()
 Rel.exportar()
+# =======================================
+
+from abc import ABC,abstractmethod
+
+class Repositorio(ABC):
+    @abstractmethod
+    def salvar(self,objeto):
+        pass
+    @abstractmethod
+    def buscar(self,id):
+        pass
+
+class RepositorioMentoria(Repositorio):
+    def salvar (self,objeto):
+        self.objeto = objeto
+        print(f"Objeto '{objeto}' salvo.")
+    def buscar(self,id):
+        self.id = id
+        print(f"Objeto '{id}' encontrado.")    
+# Se não incrementar o metodo buscar() vai dar erro, pois RepositorioMemoria()
+# herda de uma classe abstrata, portanto tem que incrementar os dois metodos.
+
+repositorio = RepositorioMentoria()   
+repositorio.salvar("caixa")  
+repositorio.buscar(1)        
+
+
+        
