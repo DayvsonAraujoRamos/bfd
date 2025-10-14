@@ -1,28 +1,25 @@
-from abc import ABC, abstractmethod
+class Comodo:
+    def __init__(self, nome):
+        self.nome = nome
+        print(f"Cômodo '{self.nome}' criado.")
 
-# Interface
-class Repositorio(ABC):
-    @abstractmethod
-    def salvar(self, objeto):
-        pass
+    def __del__(self):
+        print(f"Cômodo '{self.nome}' destruído.")
 
-    @abstractmethod
-    def buscar(self, id):
-        pass
+class Casa:
+    def __init__(self):
+        self.comodos = [
+            Comodo("Sala"),
+            Comodo("Cozinha"),
+            Comodo("Quarto"),
+            Comodo("Banheiro")
+        ]
+        print("Casa construída.")
 
+    def __del__(self):
+        print("Casa destruída.")
 
-# Classe que implementa todos os métodos
-class RepositorioMemoria(Repositorio):
-    def salvar(self, objeto):
-        print(f"Objeto {objeto} salvo na memória.")
-
-    def buscar(self, id):
-        print(f"Buscando objeto com ID {id}.")
-        return {"id": id, "objeto": "Exemplo"}
-
-
-# Agora funciona normalmente
-repo = RepositorioMemoria()
-repo.salvar("Livro A")
-print(repo.buscar(1))
+# Teste
+casa = Casa()
+del casa
 

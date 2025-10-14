@@ -62,7 +62,54 @@ class Jogador:
         self.posicao = posicao
 
 class Time:
-    
-    
+    def __init__(self, nome):
+        self.nome = nome
+        self.jogadores = []
 
-     
+    def add_jogador(self, jogador):
+        self.jogadores.append(jogador)
+
+    def listar_jogadores(self):
+        print(f"Time: {self.nome}")
+        for x in self.jogadores:
+            print(f" - {x.nome}({x.posicao})")
+
+jogador1 = Jogador("Biro-Biro","Atacante")
+jogador2 = Jogador("Neymar","Atacante")     
+time = Time("Selecao Brasileira")
+time.add_jogador(jogador1)
+time.add_jogador(jogador2)
+time.listar_jogadores()
+# ===========================
+class Motor:
+    def __init__(self):
+        print("Motor criado")
+    def __del__(self):
+        print("Motor destruido")
+
+class Carro:
+    def __init__(self):
+        self.motor = Motor()
+        print("Carro criado")
+    def __del__(self):
+        print("Carro destruido")
+
+carro = Carro()
+del carro
+# =================================
+class Comodo:
+    def __init__(self, nome):
+        self.nome = nome
+        print(f"Comodo {self.nome} criado")
+   
+class Casa:
+    def __init__(self):
+        self.comodos = [
+            Comodo("sala"),
+            Comodo("cozinha"),
+            Comodo("quarto"),
+            Comodo("banheiro")
+        ]
+        print("Casa contruida")
+ 
+casa = Casa()
