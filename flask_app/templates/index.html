@@ -1,33 +1,118 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12 mb-4">
-        <h2>Tarefas Pendentes</h2>
-        <a href="{{ url_for('new_task') }}" class="btn btn-primary">Nova Tarefa</a>
-    </div>
-</div>
-
-<div class="row">
-    {% for task in tasks %}
-    <div class="col-md-4 mb-3">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ task.title }}</h5>
-                <p class="card-text">{{ task.description }}</p>
-                <p class="text-muted">
-                    Data: {{ task.scheduled_date.strftime('%d/%m/%Y') }}
-                    <br>
-                    Horário: {{ task.scheduled_time }}
-                    <br>
-                    Categoria: {{ task.category.name }}
-                    <br>
-                    Prioridade: {{ task.priority }}
-                </p>
-                <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success">Concluir</a>
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="bi bi-list-check me-2"></i>Tarefas Pendentes</h2>
+                <a href="{{ url_for('new_task') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-2"></i>Nova Tarefa
+                </a>
             </div>
         </div>
     </div>
-    {% endfor %}
+
+    <div class="task-filters mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label class="form-label"><i class="bi bi-funnel me-1"></i>Filtrar por categoria</label>
+                <select class="form-select" id="categoryFilter">
+                    <option value="">Todas as categorias</option>
+                    {% for category in categories %}
+                    <option value="{{ category.name }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label"><i class="bi bi-sort-down me-1"></i>Ordenar por</label>
+                <select class="form-select" id="sortBy">
+                    <option value="date">Data</option>
+                    <option value="priority">Prioridade</option>
+                    <option value="category">Categoria</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for task in tasks %}
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <span class="task-category">{{ task.category.name }}</span>
+                    <h5 class="card-title">{{ task.title }}</h5>
+                    <p class="card-text">{{ task.description }}</p>
+                    <div class="task-info mt-3">
+                        <p class="task-date mb-2">
+                            <i class="bi bi-calendar-event me-2"></i>
+                            {{ task.scheduled_date.strftime('%d/%m/%Y') }}
+                            <i class="bi bi-clock ms-3 me-2"></i>
+                            {{ task.scheduled_time }}
+                        </p>
+                        <p class="mb-3">
+                            <span class="priority-{{ task.priority }}">
+                                <i class="bi bi-flag-fill me-2"></i>
+                                {{ task.priority|title }}
+                            </span>
+                        </p>
+                        <a href="{{ url_for('complete_task', task_id=task.id) }}" class="btn btn-success w-100">
+                            <i class="bi bi-check-lg me-2"></i>Concluir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center">
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                Nenhuma tarefa pendente. Que tal criar uma nova?
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+
+<script>
+document.getElementById('categoryFilter').addEventListener('change', function() {
+    // Implementar filtro por categoria
+    const category = this.value.toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(card => {
+        const cardCategory = card.querySelector('.task-category').textContent.toLowerCase();
+        if (category === '' || cardCategory === category) {
+            card.parentElement.style.display = 'block';
+        } else {
+            card.parentElement.style.display = 'none';
+        }
+    });
+});
+
+document.getElementById('sortBy').addEventListener('change', function() {
+    // Implementar ordenação
+    const sortBy = this.value;
+    const container = document.querySelector('.row');
+    const cards = Array.from(document.querySelectorAll('.col-md-4'));
+    
+    cards.sort((a, b) => {
+        if (sortBy === 'date') {
+            const dateA = a.querySelector('.task-date').textContent;
+            const dateB = b.querySelector('.task-date').textContent;
+            return dateA.localeCompare(dateB);
+        } else if (sortBy === 'priority') {
+            const priorityA = a.querySelector('[class^="priority-"]').textContent.trim();
+            const priorityB = b.querySelector('[class^="priority-"]').textContent.trim();
+            return priorityA.localeCompare(priorityB);
+        } else if (sortBy === 'category') {
+            const categoryA = a.querySelector('.task-category').textContent;
+            const categoryB = b.querySelector('.task-category').textContent;
+            return categoryA.localeCompare(categoryB);
+        }
+    });
+    
+    cards.forEach(card => container.appendChild(card));
+});
+</script>
 {% endblock %}

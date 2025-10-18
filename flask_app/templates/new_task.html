@@ -1,56 +1,95 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12 mb-4">
-        <h2>Nova Tarefa</h2>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">
+                        <i class="bi bi-plus-square me-2"></i>Nova Tarefa
+                    </h2>
+                    
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="title" class="form-label">
+                                    <i class="bi bi-pencil me-2"></i>Título
+                                </label>
+                                <input type="text" class="form-control" id="title" name="title" required 
+                                       placeholder="Digite o título da tarefa">
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="description" class="form-label">
+                                    <i class="bi bi-text-paragraph me-2"></i>Descrição
+                                </label>
+                                <textarea class="form-control" id="description" name="description" 
+                                          rows="3" placeholder="Descreva os detalhes da tarefa"></textarea>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="category_id" class="form-label">
+                                    <i class="bi bi-tag me-2"></i>Categoria
+                                </label>
+                                <select class="form-select" id="category_id" name="category_id" required>
+                                    <option value="" disabled selected>Selecione uma categoria</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="priority" class="form-label">
+                                    <i class="bi bi-flag me-2"></i>Prioridade
+                                </label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="baixa">Baixa</option>
+                                    <option value="media" selected>Média</option>
+                                    <option value="alta">Alta</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="scheduled_date" class="form-label">
+                                    <i class="bi bi-calendar me-2"></i>Data
+                                </label>
+                                <input type="date" class="form-control" id="scheduled_date" 
+                                       name="scheduled_date" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="scheduled_time" class="form-label">
+                                    <i class="bi bi-clock me-2"></i>Horário
+                                </label>
+                                <input type="time" class="form-control" id="scheduled_time" 
+                                       name="scheduled_time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">
+                                <i class="bi bi-x-circle me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-6">
-        <form method="POST">
-            <div class="mb-3">
-                <label for="title" class="form-label">Título</label>
-                <input type="text" class="form-control" id="title" name="title" required>
-            </div>
-            
-            <div class="mb-3">
-                <label for="description" class="form-label">Descrição</label>
-                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-            </div>
-            
-            <div class="mb-3">
-                <label for="category_id" class="form-label">Categoria</label>
-                <select class="form-control" id="category_id" name="category_id" required>
-                    {% for category in categories %}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="mb-3">
-                <label for="scheduled_date" class="form-label">Data</label>
-                <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" required>
-            </div>
-            
-            <div class="mb-3">
-                <label for="scheduled_time" class="form-label">Horário</label>
-                <input type="time" class="form-control" id="scheduled_time" name="scheduled_time" required>
-            </div>
-            
-            <div class="mb-3">
-                <label for="priority" class="form-label">Prioridade</label>
-                <select class="form-control" id="priority" name="priority">
-                    <option value="baixa">Baixa</option>
-                    <option value="media" selected>Média</option>
-                    <option value="alta">Alta</option>
-                </select>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Salvar</button>
-            <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancelar</a>
-        </form>
-    </div>
-</div>
+<script>
+// Set today as the minimum date
+document.getElementById('scheduled_date').min = new Date().toISOString().split('T')[0];
+
+// Highlight the priority select based on selection
+document.getElementById('priority').addEventListener('change', function() {
+    this.className = 'form-select priority-' + this.value;
+});
+</script>
 {% endblock %}

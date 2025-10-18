@@ -29,7 +29,8 @@ class DailyTask(db.Model):
 @app.route('/')
 def index():
     tasks = DailyTask.query.filter_by(status='pendente').order_by(DailyTask.scheduled_date, DailyTask.scheduled_time).all()
-    return render_template('index.html', tasks=tasks)
+    categories = Category.query.all()
+    return render_template('index.html', tasks=tasks, categories=categories)
 
 @app.route('/task/new', methods=['GET', 'POST'])
 def new_task():

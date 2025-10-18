@@ -1,17 +1,102 @@
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f1c40f;
+    --text-color: #2c3e50;
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] {
+    --primary-color: #2980b9;
+    --secondary-color: #27ae60;
+    --danger-color: #c0392b;
+    --warning-color: #f39c12;
+    --text-color: #ecf0f1;
+    --bg-color: #2c3e50;
+    --card-bg: #34495e;
+    --shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.navbar {
+    box-shadow: var(--shadow);
+    background: var(--primary-color) !important;
+}
+
 .card {
+    background-color: var(--card-bg);
+    border: none;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+    margin-bottom: 1.5rem;
     height: 100%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
 }
 
 .card-body {
     display: flex;
     flex-direction: column;
+    padding: 1.5rem;
 }
 
 .card-text {
     flex-grow: 1;
 }
 
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
 .btn-success {
+    background-color: var(--secondary-color);
+    border: none;
     margin-top: auto;
+}
+
+.priority-high {
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+.priority-medium {
+    color: var(--warning-color);
+    font-weight: bold;
+}
+
+.priority-low {
+    color: var(--secondary-color);
+}
+
+.task-date {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
+.task-category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
 }
