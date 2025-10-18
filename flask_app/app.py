@@ -21,22 +21,25 @@ class DailyTask(db.Model):
     description = db.Column(db.Text)
     status = db.Column(db.String(20), default='pendente')
     priority = db.Column(db.String(10), default='media')
+    scheduled_date = db.Column(db.Date, nullable=False)
     scheduled_time = db.Column(db.String(5))
     completed_at = db.Column(db.DateTime)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 @app.route('/')
 def index():
-    tasks = DailyTask.query.filter_by(status='pendente').order_by(DailyTask.scheduled_time).all()
+    tasks = DailyTask.query.filter_by(status='pendente').order_by(DailyTask.scheduled_date, DailyTask.scheduled_time).all()
     return render_template('index.html', tasks=tasks)
 
 @app.route('/task/new', methods=['GET', 'POST'])
 def new_task():
     if request.method == 'POST':
+        scheduled_date = datetime.strptime(request.form['scheduled_date'], '%Y-%m-%d').date()
         task = DailyTask(
             title=request.form['title'],
             description=request.form['description'],
             category_id=request.form['category_id'],
+            scheduled_date=scheduled_date,
             scheduled_time=request.form['scheduled_time'],
             priority=request.form['priority']
         )

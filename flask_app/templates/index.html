@@ -16,6 +16,8 @@
                 <h5 class="card-title">{{ task.title }}</h5>
                 <p class="card-text">{{ task.description }}</p>
                 <p class="text-muted">
+                    Data: {{ task.scheduled_date.strftime('%d/%m/%Y') }}
+                    <br>
                     Horário: {{ task.scheduled_time }}
                     <br>
                     Categoria: {{ task.category.name }}
