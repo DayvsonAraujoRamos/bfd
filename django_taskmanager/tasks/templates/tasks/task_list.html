@@ -1,0 +1,56 @@
+{% extends 'tasks/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>My Tasks</h2>
+        <a href="{% url 'task-create' %}" class="btn btn-primary">Add New Task</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                To Do
+            </div>
+            <div class="card-body">
+                {% for task in tasks %}
+                    {% if task.status == 'todo' %}
+                        {% include 'tasks/task_card.html' %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                In Progress
+            </div>
+            <div class="card-body">
+                {% for task in tasks %}
+                    {% if task.status == 'in_progress' %}
+                        {% include 'tasks/task_card.html' %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                Completed
+            </div>
+            <div class="card-body">
+                {% for task in tasks %}
+                    {% if task.status == 'completed' %}
+                        {% include 'tasks/task_card.html' %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

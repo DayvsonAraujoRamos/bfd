@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: task-manager
+    env: python
+    buildCommand: pip install -r task_manager/requirements.txt
+    startCommand: cd task_manager && gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.4
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///tarefas.db
