@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, Response
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, Response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -6,23 +6,61 @@ from urllib.parse import urlparse
 import logging
 import json
 from werkzeug.middleware.proxy_fix import ProxyFix
+import sys
 
 # Configuração do logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# Configuração do CORS e headers de segurança
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-    return response
+# Configuração do proxy
+app.wsgi_app = ProxyFix(
+    app.wsgi_app,
+    x_for=1,
+    x_proto=1,
+    x_host=1,
+    x_port=1,
+    x_prefix=1
+)
 
+# Configurações básicas
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'chave_secreta_123')
+app.config['JSON_AS_ASCII'] = False
+app.config['JSON_SORT_KEYS'] = False
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
+# Configuração do banco de dados
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tarefas.db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_size': 10,
+    'max_overflow': 20,
+    'pool_timeout': 30,
+    'pool_recycle': 1800,
+}
+
+# Headers de segurança
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Content-Security-Policy'] = "default-src 'self' https: 'unsafe-inline' 'unsafe-eval' data:;"
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    return response
 
 # Configuração do banco de dados
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///tarefas.db')
@@ -247,18 +285,32 @@ def debug():
 @app.errorhandler(400)
 def bad_request_error(error):
     logger.error(f'Bad request: {error}')
+    if request.is_json:
+        return jsonify({'error': 'Bad Request', 'message': str(error)}), 400
     return render_template('error.html', error=error), 400
 
 @app.errorhandler(404)
 def not_found_error(error):
     logger.error(f'Page not found: {error}')
+    if request.is_json:
+        return jsonify({'error': 'Not Found', 'message': str(error)}), 404
     return render_template('error.html', error=error), 404
 
 @app.errorhandler(500)
 def internal_error(error):
     logger.error(f'Server Error: {error}')
     db.session.rollback()
+    if request.is_json:
+        return jsonify({'error': 'Internal Server Error', 'message': str(error)}), 500
     return render_template('error.html', error=error), 500
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    logger.error(f'Unhandled exception: {error}', exc_info=True)
+    db.session.rollback()
+    if request.is_json:
+        return jsonify({'error': 'Internal Server Error', 'message': 'An unexpected error occurred'}), 500
+    return render_template('error.html', error='An unexpected error occurred'), 500
 
 @app.before_request
 def before_request():

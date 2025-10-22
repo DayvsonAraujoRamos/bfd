@@ -2,12 +2,20 @@ services:
   - type: web
     name: task-manager
     env: python
-    buildCommand: pip install -r task_manager/requirements.txt
-    startCommand: cd task_manager && gunicorn app:app
+    plan: free
+    buildCommand: pip install -r flask_app/requirements.txt
+    startCommand: cd flask_app && gunicorn --workers 4 --bind 0.0.0.0:$PORT app:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.13.4
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        value: sqlite:///tarefas.db
+        fromDatabase:
+          name: task_manager_db
+          property: connectionString
+
+databases:
+  - name: task_manager_db
+    plan: free
+    ipAllowList: []
