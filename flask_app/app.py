@@ -35,21 +35,8 @@ app.config['JSON_SORT_KEYS'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 # Configuração do banco de dados
-database_url = os.environ.get('DATABASE_URL')
-if database_url:
-    if database_url.startswith('postgres://'):
-        database_url = database_url.replace('postgres://', 'postgresql://', 1)
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tarefas.db'
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tarefas.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_size': 10,
-    'max_overflow': 20,
-    'pool_timeout': 30,
-    'pool_recycle': 1800,
-}
 
 # Headers de segurança
 @app.after_request
@@ -227,8 +214,27 @@ def init_db():
         db.session.rollback()
 
 # Inicializa o banco de dados quando o app é criado
-with app.app_context():
-    init_db()
+@app.before_first_request
+def create_tables():
+    try:
+        db.create_all()
+        # Verificar se já existem categorias
+        if Category.query.first() is None:
+            # Criar categorias iniciais
+            categories = [
+                Category(name='Saúde', description='Atividades relacionadas à saúde e bem-estar'),
+                Category(name='Casa', description='Tarefas domésticas'),
+                Category(name='Trabalho', description='Atividades profissionais'),
+                Category(name='Estudo', description='Atividades educacionais'),
+                Category(name='Lazer', description='Atividades de entretenimento')
+            ]
+            for category in categories:
+                db.session.add(category)
+            db.session.commit()
+            logger.info("Banco de dados inicializado com sucesso!")
+    except Exception as e:
+        logger.error(f"Erro ao inicializar banco de dados: {e}")
+        db.session.rollback()
 
 # Healthcheck route
 @app.route('/healthcheck')
