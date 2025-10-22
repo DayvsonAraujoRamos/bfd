@@ -1,12 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, abort, Response, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os
-from urllib.parse import urlparse
-import logging
-import json
-from werkzeug.middleware.proxy_fix import ProxyFix
-import sys
 
 # Configuração do logging
 logging.basicConfig(
