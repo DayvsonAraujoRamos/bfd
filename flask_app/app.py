@@ -1,8 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 from urllib.parse import urlparse
+import logging
+
+# Configuração do logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'chave_secreta_123')
@@ -111,22 +116,43 @@ def index():
 
 @app.route('/task/new', methods=['GET', 'POST'])
 def new_task():
-    if request.method == 'POST':
-        scheduled_date = datetime.strptime(request.form['scheduled_date'], '%Y-%m-%d').date()
-        task = DailyTask(
-            title=request.form['title'],
-            description=request.form['description'],
-            category_id=request.form['category_id'],
-            scheduled_date=scheduled_date,
-            scheduled_time=request.form['scheduled_time'],
-            priority=request.form['priority']
-        )
-        db.session.add(task)
-        db.session.commit()
-        flash('Tarefa criada com sucesso!')
-        return redirect(url_for('index'))
-    categories = Category.query.all()
-    return render_template('new_task.html', categories=categories)
+    try:
+        if request.method == 'POST':
+            # Validação dos campos obrigatórios
+            required_fields = ['title', 'scheduled_date', 'category_id', 'priority']
+            for field in required_fields:
+                if field not in request.form or not request.form[field]:
+                    flash(f'O campo {field} é obrigatório!', 'error')
+                    return redirect(url_for('new_task'))
+
+            try:
+                scheduled_date = datetime.strptime(request.form['scheduled_date'], '%Y-%m-%d').date()
+            except ValueError:
+                flash('Data inválida!', 'error')
+                return redirect(url_for('new_task'))
+
+            task = DailyTask(
+                title=request.form['title'],
+                description=request.form.get('description', ''),
+                category_id=request.form['category_id'],
+                scheduled_date=scheduled_date,
+                scheduled_time=request.form.get('scheduled_time', ''),
+                priority=request.form['priority']
+            )
+            db.session.add(task)
+            db.session.commit()
+            flash('Tarefa criada com sucesso!', 'success')
+            return redirect(url_for('index'))
+
+        categories = Category.query.all()
+        if not categories:
+            flash('É necessário criar categorias antes de adicionar tarefas!', 'warning')
+        return render_template('new_task.html', categories=categories)
+    except Exception as e:
+        logger.error(f'Erro ao criar tarefa: {str(e)}')
+        db.session.rollback()
+        flash('Erro ao criar tarefa. Por favor, tente novamente.', 'error')
+        return redirect(url_for('new_task'))
 
 @app.route('/task/<int:task_id>/complete')
 def complete_task(task_id):
@@ -163,6 +189,30 @@ def init_db():
 # Inicializa o banco de dados quando o app é criado
 with app.app_context():
     init_db()
+
+# Error handlers
+@app.errorhandler(400)
+def bad_request_error(error):
+    logger.error(f'Bad request: {error}')
+    return render_template('error.html', error=error), 400
+
+@app.errorhandler(404)
+def not_found_error(error):
+    logger.error(f'Page not found: {error}')
+    return render_template('error.html', error=error), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    logger.error(f'Server Error: {error}')
+    db.session.rollback()
+    return render_template('error.html', error=error), 500
+
+@app.before_request
+def before_request():
+    logger.info(f'Incoming request: {request.method} {request.url}')
+    if not request.url.startswith('https://') and 'localhost' not in request.url:
+        url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)
