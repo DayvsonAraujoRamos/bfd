@@ -1,15 +1,27 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, abort, Response
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 from urllib.parse import urlparse
 import logging
+import json
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Configuração do logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+# Configuração do CORS e headers de segurança
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
+
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'chave_secreta_123')
 
 # Configuração do banco de dados
@@ -189,6 +201,47 @@ def init_db():
 # Inicializa o banco de dados quando o app é criado
 with app.app_context():
     init_db()
+
+# Healthcheck route
+@app.route('/healthcheck')
+def healthcheck():
+    try:
+        # Test database connection
+        db.session.execute('SELECT 1')
+        return Response(
+            response=json.dumps({'status': 'healthy', 'database': 'connected'}),
+            status=200,
+            mimetype='application/json'
+        )
+    except Exception as e:
+        logger.error(f'Healthcheck failed: {e}')
+        return Response(
+            response=json.dumps({'status': 'unhealthy', 'error': str(e)}),
+            status=500,
+            mimetype='application/json'
+        )
+
+# Debug route
+@app.route('/debug')
+def debug():
+    if not app.debug:
+        return Response(
+            response=json.dumps({'message': 'Debug mode is disabled'}),
+            status=403,
+            mimetype='application/json'
+        )
+    
+    debug_info = {
+        'request_headers': dict(request.headers),
+        'environment': dict(os.environ),
+        'database_uri': app.config['SQLALCHEMY_DATABASE_URI'],
+        'config': {k: str(v) for k, v in app.config.items() if k not in ['SECRET_KEY']}
+    }
+    return Response(
+        response=json.dumps(debug_info, indent=2),
+        status=200,
+        mimetype='application/json'
+    )
 
 # Error handlers
 @app.errorhandler(400)
