@@ -66,6 +66,29 @@
                                 <input type="time" class="form-control" id="scheduled_time" 
                                        name="scheduled_time" required>
                             </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="area" class="form-label">
+                                    <i class="bi bi-diagram-2 me-2"></i>Área
+                                </label>
+                                <select class="form-select" id="area" name="area">
+                                    <option value="Desenvolvimento">Desenvolvimento</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Vendas">Vendas</option>
+                                    <option value="RH">RH</option>
+                                    <option value="Financeiro">Financeiro</option>
+                                    <option value="Operações">Operações</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="duration_hours" class="form-label">
+                                    <i class="bi bi-hourglass-split me-2"></i>Duração (horas)
+                                </label>
+                                <input type="number" class="form-control" id="duration_hours" 
+                                       name="duration_hours" value="1" min="0.5" step="0.5">
+                            </div>
                         </div>
                         
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">

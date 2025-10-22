@@ -77,16 +77,12 @@ class DailyTask(db.Model):
     description = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(20), default='pendente')
     priority = db.Column(db.String(10), default='media')
+    area = db.Column(db.String(100), nullable=True)
     scheduled_date = db.Column(db.Date, nullable=False)
     scheduled_time = db.Column(db.String(5), nullable=True)
+    duration_hours = db.Column(db.Float, default=1.0, nullable=True)
     completed_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    estimated_hours = db.Column(db.Float, default=1.0, nullable=True)
-    assigned_to = db.Column(db.String(100), nullable=True)
-    project = db.Column(db.String(100), nullable=True)
-    cost_center = db.Column(db.String(50), nullable=True)
-    tags = db.Column(db.String(200), nullable=True)
-    progress = db.Column(db.Integer, default=0, nullable=True)
 
 def get_task_statistics():
     try:
@@ -177,8 +173,10 @@ def new_task():
                 title=request.form['title'],
                 description=request.form.get('description', ''),
                 category_id=request.form['category_id'],
+                area=request.form.get('area', ''),
                 scheduled_date=scheduled_date,
                 scheduled_time=request.form.get('scheduled_time', ''),
+                duration_hours=float(request.form.get('duration_hours', 1.0)),
                 priority=request.form['priority']
             )
             db.session.add(task)
