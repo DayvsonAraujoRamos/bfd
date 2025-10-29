@@ -1,0 +1,65 @@
+import sqlite3
+
+# Conectando ao banco de dados
+conn = sqlite3.connect('escola_v2.db')
+cursor = conn.cursor()
+
+print("\n1. Todos os alunos da tabela:")
+print("-" * 50)
+# Consultando todos os alunos
+cursor.execute("SELECT * FROM Aluno")
+alunos = cursor.fetchall()
+for aluno in alunos:
+    print(aluno)
+
+print("\n2. Top 10 médias dos alunos:")
+print("-" * 50)
+# Consultando as médias em ordem decrescente
+query_medias = """
+SELECT 
+    nome,
+    (nota1 + nota2) / 2 as media
+FROM Aluno
+ORDER BY media DESC
+LIMIT 10
+"""
+cursor.execute(query_medias)
+top_medias = cursor.fetchall()
+for nome, media in top_medias:
+    print(f"Aluno: {nome} - Média: {media:.2f}")
+
+print("\n3. Left Join entre Aluno e Turma:")
+print("-" * 50)
+# Consultando com LEFT JOIN
+query_join = """
+SELECT 
+    a.*,
+    t.nome as nome_turma,
+    t.ano
+FROM Aluno a
+LEFT JOIN Turma t ON a.turma_id = t.id
+"""
+cursor.execute(query_join)
+alunos_turmas = cursor.fetchall()
+for registro in alunos_turmas:
+    print(registro)
+
+print("\n4. Alunos da turma 2:")
+print("-" * 50)
+# Consultando apenas alunos da turma 2
+query_turma2 = """
+SELECT 
+    a.*,
+    t.nome as nome_turma,
+    t.ano
+FROM Aluno a
+LEFT JOIN Turma t ON a.turma_id = t.id
+WHERE a.turma_id = 2
+"""
+cursor.execute(query_turma2)
+alunos_turma2 = cursor.fetchall()
+for registro in alunos_turma2:
+    print(registro)
+
+# Fechando a conexão
+conn.close()
